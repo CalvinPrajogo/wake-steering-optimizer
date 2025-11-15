@@ -33,9 +33,9 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 
-# Figures (optional - uncomment if you don't want to commit generated figures)
-# figures/*
-# !figures/.gitkeep
+# Figures - don't track generated visualizations
+figures/*
+!figures/.gitkeep
 
 # IDE
 .vscode/
