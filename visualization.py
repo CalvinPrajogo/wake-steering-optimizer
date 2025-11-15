@@ -5,6 +5,8 @@ Visualization functions for wake steering optimization results
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from floris.flow_visualization import visualize_cut_plane
+from floris.layout_visualization import plot_turbine_labels
 import config
 
 
@@ -34,13 +36,32 @@ class OptimizationVisualizer:
         
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
         
-        # TODO: Implement FLORIS flow field visualization
-        # Left: Baseline flow field (0° yaw)
-        # Right: Optimized flow field (optimal yaw angles)
+        # Get the FLORIS model from optimizer
+        fmodel = self.optimizer.fmodel
         
-        ax1.set_title("Baseline (0° Yaw)", fontsize=14, fontweight='bold')
-        ax2.set_title(f"Optimized ({self.results['improvement_percent']:.2f}% Improvement)", 
-                     fontsize=14, fontweight='bold')
+        # Calculate baseline flow field (0° yaw)
+        baseline_yaw = np.array([[0] * self.optimizer.n_turbines])
+        fmodel.set(yaw_angles=baseline_yaw)
+        fmodel.run()
+        horizontal_plane_baseline = fmodel.calculate_horizontal_plane(height=90.0)
+        
+        # Calculate optimized flow field
+        optimal_yaw = np.array([self.results['optimal_yaw_angles']])
+        fmodel.set(yaw_angles=optimal_yaw)
+        fmodel.run()
+        horizontal_plane_optimized = fmodel.calculate_horizontal_plane(height=90.0)
+        
+        # Plot baseline
+        visualize_cut_plane(horizontal_plane_baseline, ax=ax1, 
+                          title="Baseline (0° Yaw)", 
+                          color_bar=True, cmap='coolwarm')
+        plot_turbine_labels(fmodel, ax1, color='white', fontsize=10)
+        
+        # Plot optimized
+        visualize_cut_plane(horizontal_plane_optimized, ax=ax2,
+                          title=f"Optimized ({self.results['improvement_percent']:.2f}% Improvement)",
+                          color_bar=True, cmap='coolwarm')
+        plot_turbine_labels(fmodel, ax2, color='white', fontsize=10)
         
         plt.tight_layout()
         
@@ -59,8 +80,10 @@ class OptimizationVisualizer:
         """
         print("Generating power comparison chart...")
         
-        # TODO: Get individual turbine powers from FLORIS
-        # For now, use placeholder data
+        # Get individual turbine powers
+        baseline_powers = self.optimizer.baseline_turbine_powers
+        optimized_powers = self.optimizer.optimal_turbine_powers
+        
         turbine_labels = [f'T{i+1}' for i in range(self.optimizer.n_turbines)]
         
         fig, ax = plt.subplots(figsize=(10, 6))
@@ -68,12 +91,8 @@ class OptimizationVisualizer:
         x = np.arange(len(turbine_labels))
         width = 0.35
         
-        # TODO: Replace with actual turbine powers
-        baseline_powers = [0] * self.optimizer.n_turbines
-        optimized_powers = [0] * self.optimizer.n_turbines
-        
-        ax.bar(x - width/2, baseline_powers, width, label='Baseline', alpha=0.8)
-        ax.bar(x + width/2, optimized_powers, width, label='Optimized', alpha=0.8)
+        ax.bar(x - width/2, baseline_powers, width, label='Baseline', alpha=0.8, color='steelblue')
+        ax.bar(x + width/2, optimized_powers, width, label='Optimized', alpha=0.8, color='orange')
         
         ax.set_xlabel('Turbine', fontsize=12, fontweight='bold')
         ax.set_ylabel('Power (kW)', fontsize=12, fontweight='bold')
@@ -82,6 +101,13 @@ class OptimizationVisualizer:
         ax.set_xticklabels(turbine_labels)
         ax.legend()
         ax.grid(axis='y', alpha=0.3)
+        
+        # Add value labels on bars
+        for i, (baseline, optimized) in enumerate(zip(baseline_powers, optimized_powers)):
+            ax.text(i - width/2, baseline + 20, f'{baseline:.0f}', 
+                   ha='center', va='bottom', fontsize=9)
+            ax.text(i + width/2, optimized + 20, f'{optimized:.0f}', 
+                   ha='center', va='bottom', fontsize=9)
         
         plt.tight_layout()
         

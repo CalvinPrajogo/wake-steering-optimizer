@@ -35,8 +35,10 @@ class WakeSteeringOptimizer:
         
         # Storage for optimization results
         self.baseline_power = None
+        self.baseline_turbine_powers = None
         self.optimal_yaw_angles = None
         self.optimal_power = None
+        self.optimal_turbine_powers = None
         self.all_results = []
         
     def _setup_floris(self):
@@ -46,14 +48,27 @@ class WakeSteeringOptimizer:
         Returns:
             FlorisModel instance
         """
-        # TODO: Implement FLORIS initialization
-        # This will use FLORIS v4+ API
         print("Setting up FLORIS model...")
         print(f"Wind conditions: {self.wind_direction}° @ {self.wind_speed} m/s")
         print(f"Turbine layout: {self.n_turbines} turbines")
         
-        # Placeholder - will implement with actual FLORIS setup
-        return None
+        # Initialize FLORIS with configuration file
+        fmodel = FlorisModel("floris_config.yaml")
+        
+        # Set wind farm layout and conditions
+        layout_x = [pos[0] for pos in self.turbine_positions]
+        layout_y = [pos[1] for pos in self.turbine_positions]
+        
+        fmodel.set(
+            layout_x=layout_x,
+            layout_y=layout_y,
+            wind_directions=[self.wind_direction],
+            wind_speeds=[self.wind_speed],
+            turbulence_intensities=[0.06]
+        )
+        
+        print("FLORIS model initialized successfully")
+        return fmodel
     
     def run_simulation(self, yaw_angles):
         """
@@ -65,12 +80,38 @@ class WakeSteeringOptimizer:
         Returns:
             Total farm power output (kW)
         """
-        # TODO: Implement FLORIS simulation
-        # Will use fmodel.set() and fmodel.run() methods
-        # Then extract power with fmodel.get_turbine_powers()
+        # Set yaw angles - FLORIS expects shape (n_findex, n_turbines)
+        yaw_array = np.array([yaw_angles])  # Add findex dimension
         
-        # Placeholder
-        return 0.0
+        # Set yaw angles and run simulation
+        self.fmodel.set(yaw_angles=yaw_array)
+        self.fmodel.run()
+        
+        # Get turbine powers (in Watts, convert to kW)
+        turbine_powers = self.fmodel.get_turbine_powers()[0] / 1000.0  # First findex
+        
+        # Return total farm power
+        return np.sum(turbine_powers)
+    
+    def get_turbine_powers(self, yaw_angles):
+        """
+        Get individual turbine powers for given yaw angles
+        
+        Args:
+            yaw_angles: Array of yaw angles for each turbine (degrees)
+            
+        Returns:
+            Array of individual turbine powers (kW)
+        """
+        # Set yaw angles and run simulation
+        yaw_array = np.array([yaw_angles])
+        self.fmodel.set(yaw_angles=yaw_array)
+        self.fmodel.run()
+        
+        # Get turbine powers (in Watts, convert to kW)
+        turbine_powers = self.fmodel.get_turbine_powers()[0] / 1000.0
+        
+        return turbine_powers
     
     def optimize(self, yaw_range=None, progress_interval=1000):
         """
@@ -93,6 +134,7 @@ class WakeSteeringOptimizer:
         # Calculate baseline (all turbines at 0° yaw)
         baseline_yaw = [0] * self.n_turbines
         self.baseline_power = self.run_simulation(baseline_yaw)
+        self.baseline_turbine_powers = self.get_turbine_powers(baseline_yaw)
         print(f"\nBaseline power (0° yaw): {self.baseline_power:.2f} kW")
         
         # Generate all combinations of yaw angles
@@ -130,6 +172,7 @@ class WakeSteeringOptimizer:
         # Store optimal results
         self.optimal_power = best_power
         self.optimal_yaw_angles = list(best_yaw)
+        self.optimal_turbine_powers = self.get_turbine_powers(self.optimal_yaw_angles)
         
         elapsed_time = time() - start_time
         print(f"\nOptimization complete in {elapsed_time:.1f} seconds")
@@ -173,10 +216,14 @@ class WakeSteeringOptimizer:
         
         print("\nBASELINE (No Steering):")
         print(f"  Total Power: {results['baseline_power']:.2f} kW")
+        for i, power in enumerate(self.baseline_turbine_powers):
+            print(f"  T{i+1}: {power:.2f} kW")
         
         print("\nOPTIMIZED (Wake Steering):")
         print(f"  Optimal Yaw Angles: {results['optimal_yaw_angles']}")
         print(f"  Total Power: {results['optimal_power']:.2f} kW")
+        for i, power in enumerate(self.optimal_turbine_powers):
+            print(f"  T{i+1}: {power:.2f} kW")
         
         print("\nIMPROVEMENT:")
         print(f"  Power Gain: +{results['improvement_percent']:.2f}%")
