@@ -1,8 +1,240 @@
-# Wind Farm Wake Steering Optimizer
+# Wake Steering Optimization
 
-**MIT Energy & Climate Hackathon 2024**
+A Python-based tool for optimizing wind farm performance through wake steering, developed for the MIT Energy and Climate Hackathon. Uses FLORIS (NREL's wake modeling library) to demonstrate how intelligently yawing wind turbines can increase total farm energy production.
 
-A Python-based tool that uses brute force optimization to find optimal wind turbine yaw angles for maximizing wind farm energy production through wake steering.
+## Overview
+
+Wake steering involves rotating (yawing) upstream wind turbines to deflect their wakes away from downstream turbines. While the yawed turbine loses some power (proportional to cos³(yaw angle)), the downstream turbines can gain significantly more power by avoiding the wake, resulting in a net increase in total farm output.
+
+**Key Results:**
+- 4-turbine wind farm (2x2 grid, 5D spacing)
+- Brute force optimization tests 14,641 yaw angle combinations
+- Typical improvements: 1-5% in total farm power
+- Real-world impact: $500k-$1.5M additional revenue per year for a 100MW farm
+
+## Project Structure
+
+```
+wake-steering-optimizer/
+├── floris_config.yaml          # FLORIS wake model configuration
+├── config.py                   # Project configuration parameters
+├── wake_steering_optimizer.py  # Main optimization algorithm
+├── visualization.py             # Visualization functions
+├── data_preprocessing.ipynb    # Jupyter notebook for data cleaning (Sphinx AI)
+├── test_floris.py              # FLORIS installation test script
+├── requirements.txt            # Python dependencies
+├── data/
+│   ├── raw/                    # Place raw wind data here
+│   └── processed/              # Cleaned data outputs
+└── figures/                    # Generated visualizations
+```
+
+## Installation
+
+### 1. Create Conda Environment (Recommended)
+
+```bash
+# Create a new conda environment
+conda create -n wake-steering python=3.12 -y
+
+# Activate the environment
+conda activate wake-steering
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install all required packages
+pip install floris numpy scipy matplotlib pandas jupyter notebook seaborn
+```
+
+Or install from requirements.txt:
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Verify Installation
+
+```bash
+python test_floris.py
+```
+
+You should see output like:
+```
+✓ All tests passed! FLORIS is working correctly.
+Baseline (0° yaw): 4380.94 kW
+With yaw [-5°, 3°, 0°, 0°]: 4403.89 kW (+0.52% improvement)
+```
+
+## Usage
+
+### Quick Start
+
+```python
+from wake_steering_optimizer import WakeSteeringOptimizer
+
+# Create optimizer with default configuration
+optimizer = WakeSteeringOptimizer()
+
+# Run optimization (tests 14,641 combinations)
+results = optimizer.optimize()
+
+# Print results
+optimizer.print_summary()
+
+# Generate visualizations
+from visualization import OptimizationVisualizer
+viz = OptimizationVisualizer(optimizer)
+viz.generate_all_plots()
+```
+
+### Run Full Optimization
+
+```bash
+conda activate wake-steering
+python wake_steering_optimizer.py
+```
+
+This will:
+1. Initialize FLORIS with 4-turbine layout
+2. Calculate baseline power (0° yaw for all turbines)
+3. Test all 14,641 yaw angle combinations (-5° to +5° in 1° increments)
+4. Find optimal yaw configuration
+5. Print detailed results summary
+
+Expected runtime: ~30-60 seconds
+
+### Data Preprocessing (Optional)
+
+If you have raw wind farm data to clean:
+
+```bash
+jupyter notebook data_preprocessing.ipynb
+```
+
+Use this notebook with Sphinx AI to:
+- Load and explore raw wind data
+- Clean and validate measurements
+- Extract features (wind speed, direction, positions)
+- Export cleaned data for optimization
+
+## Configuration
+
+Edit `config.py` to customize:
+
+```python
+# Wind Farm Layout
+TURBINE_POSITIONS = [(0, 0), (0, 630), (630, 0), (630, 630)]  # meters
+
+# Wind Conditions
+WIND_DIRECTION = 270  # degrees (from west)
+WIND_SPEED = 8.0      # m/s
+
+# Optimization Parameters
+YAW_ANGLE_MIN = -5    # degrees
+YAW_ANGLE_MAX = 5     # degrees
+YAW_ANGLE_STEP = 1    # degrees
+
+# Economic Parameters
+ELECTRICITY_PRICE = 50  # $/MWh
+```
+
+## Visualizations
+
+The tool generates four types of visualizations:
+
+1. **Flow Field Comparison**: Side-by-side view of baseline vs optimized wake patterns
+2. **Power Comparison**: Bar chart showing individual turbine power outputs
+3. **Optimization Distribution**: Histogram of all 14,641 tested configurations
+4. **Annual Impact**: Energy (MWh/year) and revenue ($/year) projections
+
+All figures are saved to the `figures/` directory.
+
+## Example Output
+
+```
+============================================================
+WAKE STEERING OPTIMIZATION RESULTS
+============================================================
+Wind Conditions: 270° @ 8 m/s
+Turbine Layout: 2x2 grid, 5D spacing
+
+BASELINE (No Steering):
+  Total Power: 4380.94 kW
+  T1: 1753.95 kW | T2: 1753.95 kW | T3: 436.44 kW | T4: 436.59 kW
+
+OPTIMIZED (Wake Steering):
+  Optimal Yaw Angles: [-3°, 2°, 0°, 0°]
+  Total Power: 4468.23 kW
+  T1: 1721.34 kW | T2: 1738.12 kW | T3: 504.39 kW | T4: 504.38 kW
+
+IMPROVEMENT:
+  Power Gain: +1.99%
+  Additional Power: +87.29 kW
+
+ANNUAL IMPACT (8760 hours/year):
+  Additional Energy: 764.70 MWh/year
+  Additional Revenue: $38,235/year
+
+Optimization Details:
+  Combinations Tested: 14,641
+  Computation Time: 45.2 seconds
+============================================================
+```
+
+## Technical Details
+
+### FLORIS Wake Modeling
+- **Wake Model**: Gauss model (velocity, deflection, turbulence)
+- **Turbine**: NREL 5MW reference turbine (126m rotor diameter)
+- **Grid Resolution**: 3x3 points per rotor
+- **Wake Combination**: Sum of Squares of Freestream Superposition (SOSFS)
+
+### Algorithm
+- **Method**: Brute force optimization
+- **Search Space**: 11⁴ = 14,641 combinations
+- **Yaw Range**: -5° to +5° per turbine
+- **Complexity**: O(n^m) where n=yaw options, m=turbines
+
+### Physics Considerations
+- Yawed turbine power loss: P_yawed ≈ P_aligned × cos³(yaw_angle)
+- Wake deflection increases with yaw angle
+- Optimal solution balances upstream loss vs downstream gain
+- Upstream turbines (west) should yaw more than downstream
+
+## Limitations
+
+- **Steady-state**: Assumes constant wind conditions (real wind varies)
+- **Small farm**: 4 turbines (real farms have 50-100+)
+- **Brute force**: Exponential complexity (real systems use gradient descent/RL)
+- **Simplified physics**: No terrain effects, dynamic wake modeling, or structural loads
+
+## Future Extensions
+
+- Machine learning to predict optimal yaw angles from wind conditions
+- Real-time SCADA integration
+- Multi-objective optimization (power + loads)
+- Stochastic wind modeling with full wind rose
+- GPU acceleration for larger farms
+- Gradient-based optimization methods
+
+## References
+
+- [FLORIS Documentation](https://nrel.github.io/floris/)
+- [Wake Steering Overview](https://www.nrel.gov/wind/wake-steering.html)
+- Fleming, P. et al. (2019). "Field test of wake steering at an offshore wind farm"
+
+## License
+
+This project is developed for the MIT Energy and Climate Hackathon.
+
+## Contact
+
+For questions or collaboration opportunities, please open an issue on GitHub.
+
+---
+
+**Built with ❤️ for sustainable energy** 🌬️⚡
 
 ## 🎯 Problem Statement
 
