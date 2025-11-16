@@ -38,7 +38,7 @@ export default function TurbineDetail() {
             <ArrowLeft className="w-4 h-4" />
             Back to Farm
           </Button>
-          <h1 className="text-xl font-bold text-foreground">
+          <h1 className="text-xl font-bold text-foreground absolute left-1/2 transform -translate-x-1/2">
             Turbine {turbineId} Analysis
           </h1>
           <div />

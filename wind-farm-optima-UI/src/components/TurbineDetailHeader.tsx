@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Wind, Gauge, Activity, TrendingUp } from "lucide-react";
+import { Wind, Gauge, Activity, TrendingUp, Fan } from "lucide-react";
 import type { TurbineDetail } from "@/lib/types";
 
 interface TurbineDetailHeaderProps {
@@ -14,7 +14,7 @@ export function TurbineDetailHeader({ turbine }: TurbineDetailHeaderProps) {
         <div className="flex items-center justify-center">
           <div className="relative">
             <div className="w-64 h-64 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border-4 border-primary/30 animate-pulse">
-              <Wind className="w-32 h-32 text-primary" />
+              <Fan className="w-32 h-32 text-primary animate-spin" style={{ animationDuration: '3s' }} />
             </div>
           </div>
         </div>
@@ -26,6 +26,9 @@ export function TurbineDetailHeader({ turbine }: TurbineDetailHeaderProps) {
               Turbine {turbine.id}
             </h1>
             <p className="text-muted-foreground">Real-time performance monitoring</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Position: ({turbine.position[0].toFixed(1)}m, {turbine.position[1].toFixed(1)}m)
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
