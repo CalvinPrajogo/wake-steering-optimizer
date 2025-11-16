@@ -36,19 +36,20 @@ load_dotenv()
 latitude = 41.119917
 longitude = -71.516111
 unit_group = 'us'
-start_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+start_date = "2012-01-01"
+end_date = "2012-01-01"
 api_key = os.getenv('WEATHER_API_KEY')
 
 # Set up output directory and filename
 today_date = datetime.now().strftime('%Y-%m-%d')
 output_dir = Path('data/raw')
 output_dir.mkdir(parents=True, exist_ok=True)
-output_file = output_dir / f'forecast_data_{today_date}.json'
+output_file = output_dir / f'forecast_data_{start_date}_{end_date}.json'
 
 # Construct the URL
 url = (
     f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
-    f"{latitude},{longitude}/{start_date}?"
+    f"{latitude},{longitude}/{start_date}/{end_date}?"
     f"unitGroup={unit_group}&"
     f"key={api_key}&"
     f"elements=datetime,datetimeEpoch,windspeed,windspeedmax,windspeedmean,windspeedmin,winddir&"
