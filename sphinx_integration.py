@@ -207,11 +207,8 @@ class SphinxPredictor:
             '--prompt', prompt
         ]
         
-        # Add API key if available (for programmatic use)
-        if self.api_key:
-            cmd.extend(['--api-key', self.api_key])
-        
-        # Add environment variables
+        # Set up environment variables
+        # Sphinx CLI uses SPHINX_API_KEY environment variable for authentication
         env = os.environ.copy()
         if self.api_key:
             env['SPHINX_API_KEY'] = self.api_key
