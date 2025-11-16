@@ -69,9 +69,8 @@ export function FarmMap({ turbines }: FarmMapProps) {
 
   const config = {
     responsive: true,
-    displayModeBar: true,
+    displayModeBar: false,
     displaylogo: false,
-    modeBarButtonsToRemove: ['lasso2d', 'select2d'],
   };
 
   return (

@@ -59,6 +59,13 @@ export function LiveFarmOutputChart({ prediction, actual }: LiveFarmOutputChartP
     },
     margin: { t: 60, r: 40, b: 60, l: 60 },
     hovermode: 'x unified' as const,
+    hoverlabel: {
+      bgcolor: 'hsl(220 25% 15%)',
+      bordercolor: 'hsl(220 25% 25%)',
+      font: {
+        color: 'hsl(180 100% 95%)',
+      },
+    },
     legend: {
       x: 0.02,
       y: 0.98,
@@ -76,7 +83,7 @@ export function LiveFarmOutputChart({ prediction, actual }: LiveFarmOutputChartP
 
   const config = {
     responsive: true,
-    displayModeBar: true,
+    displayModeBar: false,
     displaylogo: false,
   };
 
