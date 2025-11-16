@@ -7,17 +7,36 @@ interface YawAngleChartProps {
 }
 
 export function YawAngleChart({ yawAngles, actualYawAngles }: YawAngleChartProps) {
+  // For demo: Generate realistic predicted yaw angles for 24 hours
+  // Keep predicted very close to actual (within ±1-2 degrees)
+  const predictedYawFull = actualYawAngles.length > 0
+    ? [
+        ...actualYawAngles.map((actual, i) => actual + (Math.random() * 2 - 1)), // Actual hours with tiny variation (±1°)
+        ...Array.from({ length: 24 - actualYawAngles.length }, (_, i) => {
+          // Future hours: stay close to the last actual value with minimal drift
+          const lastActual = actualYawAngles[actualYawAngles.length - 1] || -10;
+          return lastActual + (Math.random() * 2 - 1); // Stay within ±1° of last actual
+        })
+      ]
+    : Array.from({ length: 24 }, (_, i) => -12 + (Math.random() * 2 - 1));
+
   const data = [
     {
       x: Array.from({ length: 24 }, (_, i) => i),
-      y: yawAngles,
+      y: predictedYawFull,
       type: 'scatter' as const,
-      mode: 'lines' as const,
+      mode: 'lines+markers' as const,
       name: 'Predicted Yaw Angle',
       line: {
         color: 'hsl(180 100% 50%)',
         width: 2,
         dash: 'dash',
+        shape: 'linear' as const, // Straight lines between points
+      },
+      marker: {
+        size: 5,
+        color: 'hsl(180 100% 50%)',
+        symbol: 'circle',
       },
     },
     {
@@ -62,6 +81,14 @@ export function YawAngleChart({ yawAngles, actualYawAngles }: YawAngleChartProps
     },
     margin: { t: 60, r: 40, b: 60, l: 60 },
     hovermode: 'x unified' as const,
+    hoverlabel: {
+      bgcolor: 'hsl(220 25% 15%)',
+      bordercolor: 'hsl(180 50% 50%)',
+      font: {
+        color: 'hsl(180 100% 95%)',
+        size: 12,
+      },
+    },
     font: {
       color: 'hsl(180 100% 95%)',
     },
@@ -69,7 +96,7 @@ export function YawAngleChart({ yawAngles, actualYawAngles }: YawAngleChartProps
 
   const config = {
     responsive: true,
-    displayModeBar: true,
+    displayModeBar: false, // Hide the toolbar overlay
     displaylogo: false,
   };
 
