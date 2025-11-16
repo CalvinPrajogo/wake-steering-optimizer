@@ -53,7 +53,28 @@ Or install from requirements.txt:
 pip install -r requirements.txt
 ```
 
-### 3. Verify Installation
+### 3. Configure API Keys
+
+Create a `.env` file in the project root with your API keys:
+
+```bash
+# Create .env file
+cat > .env << EOF
+# Weather forecast API (Visual Crossing)
+WEATHER_API_KEY="your-visual-crossing-api-key"
+
+# Sphinx AI for predictive optimization (optional but recommended)
+SPHINX_API_KEY="your-sphinx-api-key"
+EOF
+```
+
+**Get API Keys:**
+- Visual Crossing: https://www.visualcrossing.com/weather-api (free tier: 1000 calls/day)
+- Sphinx AI: https://sphinx.ai/settings/api-keys (required for AI-powered predictions)
+
+**Note:** The `.env` file is gitignored and will not be committed to your repository.
+
+### 4. Verify Installation
 
 ```bash
 python test_floris.py

@@ -38,10 +38,13 @@ Sphinx AI uses a CLI tool instead of HTTP API:
 # Already installed in requirements.txt
 pip install sphinx-ai-cli
 
-# Login (one-time setup)
-sphinx-cli login
-# This will open your browser for authentication
+# Set up API key in .env file
+# Add this line to .env:
+SPHINX_API_KEY="your-api-key-here"
 ```
+
+**Note:** No manual login required! The system uses your API key from `.env` automatically.
+Get your API key from: https://sphinx.ai/settings/api-keys
 
 ---
 
@@ -188,11 +191,15 @@ Add to `.env` file:
 # Weather API (required)
 WEATHER_API_KEY="your-visual-crossing-api-key"
 
-# Sphinx AI (optional - uses browser login if not set)
+# Sphinx AI (required for predictions)
 SPHINX_API_KEY="your-sphinx-api-key"
 ```
 
-**Note:** For interactive use, Sphinx CLI will open your browser to login. API keys are only needed for programmatic/automated use.
+**Getting API Keys:**
+- Weather: https://www.visualcrossing.com/weather-api
+- Sphinx AI: https://sphinx.ai/settings/api-keys
+
+**Note:** The system runs completely automatically once keys are set. No interactive login required.
 
 ---
 
@@ -277,33 +284,34 @@ wake-steering-optimizer/
 ### Sphinx CLI Not Found
 ```bash
 pip install sphinx-ai-cli
-sphinx-cli login
 ```
 
 ### Authentication Issues
-If using API key:
-```python
-# In .env
-SPHINX_API_KEY="your-key-here"
-
-# Or pass directly
-predictor = SphinxPredictor(api_key="your-key-here")
-```
-
-For interactive use (recommended):
 ```bash
-sphinx-cli login
-# Opens browser for one-time authentication
+# Check if API key is set in .env
+cat .env | grep SPHINX_API_KEY
+
+# If missing, add it:
+echo 'SPHINX_API_KEY="your-key-here"' >> .env
 ```
+
+Get your API key from: https://sphinx.ai/settings/api-keys
 
 ### Slow Predictions
-Sphinx AI typically takes 1-2 minutes for analysis. This is normal for the first prediction. Subsequent predictions may be faster as Sphinx learns patterns.
+Sphinx AI typically takes 1-2 minutes for analysis. This is normal for the first prediction. Subsequent predictions may be faster as patterns are learned.
 
 ### Notebook Not Found
 Ensure `data_preprocessing.ipynb` exists:
 ```python
 predictor = SphinxPredictor(notebook_path='data_preprocessing.ipynb')
 ```
+
+### API Key Errors
+If you see authentication errors:
+1. Verify SPHINX_API_KEY is in .env file
+2. Check the key hasn't expired at https://sphinx.ai/settings/api-keys
+3. Ensure .env file is in the project root directory
+4. Try regenerating the API key if needed
 
 ---
 

@@ -66,20 +66,20 @@ class PredictiveOptimizer:
         print(f"\nRecommended search range for these conditions: ±{yaw_max}°")
         print(f"This would require {(2*yaw_max+1)**4:,} combinations to test")
         
-        # Use Sphinx AI to predict optimal angles
-        print("\n🤖 Asking Sphinx AI for prediction...")
-        print("(This may take 1-2 minutes for Sphinx to analyze the data)")
+        # Use AI to predict optimal angles
+        print("\n🤖 Analyzing forecast data to predict optimal yaw angles...")
+        print("(This may take 1-2 minutes...)")
         
         try:
             prediction = self.sphinx.predict_yaw_angles(forecast_data)
             
-            print("\n✅ Sphinx AI Prediction Complete!")
+            print("\n✅ Prediction Complete!")
             print(f"  Predicted Yaw Angles: {prediction['predicted_yaws']}")
             print(f"  Confidence: {prediction['confidence']}")
             print(f"  Recommended Search Range: ±{prediction['search_range']}°")
             
             if prediction['reasoning']:
-                print(f"\n  Reasoning: {prediction['reasoning'][:200]}...")
+                print(f"\n  Analysis: {prediction['reasoning'][:200]}...")
             
             # Save prediction
             if save_prediction:
@@ -95,10 +95,10 @@ class PredictiveOptimizer:
             return prediction
             
         except Exception as e:
-            print(f"\n⚠️  Sphinx AI prediction failed: {e}")
+            print(f"\n⚠️  Prediction service unavailable: {e}")
             print("Falling back to adaptive range based on conditions")
             
-            # Fallback: Use adaptive range without Sphinx
+            # Fallback: Use adaptive range without AI
             return {
                 'predicted_yaws': [0, 0, 0, 0],  # Neutral fallback
                 'confidence': ['low', 'low', 'low', 'low'],
@@ -265,7 +265,7 @@ class PredictiveOptimizer:
         # Compare to prediction if available
         if prediction and not prediction.get('fallback'):
             pred_yaws = prediction['predicted_yaws']
-            print(f"\nComparison to Sphinx AI Prediction:")
+            print(f"\nComparison to AI Prediction:")
             print(f"  Predicted: {[int(y) for y in pred_yaws]}")
             print(f"  Optimal:   {results['optimal_yaw_angles']}")
             

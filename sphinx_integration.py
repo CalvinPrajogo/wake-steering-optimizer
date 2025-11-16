@@ -28,11 +28,17 @@ class SphinxPredictor:
         
         Args:
             notebook_path: Path to the Jupyter notebook for Sphinx to work with
-            api_key: Optional Sphinx AI API key for programmatic access
-                    If None, will use interactive browser login
+            api_key: Sphinx AI API key for programmatic access
+                    If None, will load from SPHINX_API_KEY environment variable
         """
         self.notebook_path = Path(notebook_path)
         self.api_key = api_key or os.getenv('SPHINX_API_KEY')
+        
+        if not self.api_key:
+            raise ValueError(
+                "SPHINX_API_KEY not found. Please set it in .env file or pass as argument.\n"
+                "Get your API key from: https://sphinx.ai/settings/api-keys"
+            )
         
         if not self.notebook_path.exists():
             raise FileNotFoundError(f"Notebook not found: {self.notebook_path}")
@@ -54,7 +60,7 @@ class SphinxPredictor:
         # Create prompt for Sphinx AI
         prompt = self._create_prediction_prompt(forecast_data, historical_results)
         
-        # Run Sphinx CLI
+        # Run Sphinx CLI (silently in background)
         result = self._run_sphinx_cli(prompt)
         
         # Parse Sphinx's response
@@ -191,7 +197,7 @@ class SphinxPredictor:
     
     def _run_sphinx_cli(self, prompt, timeout=300):
         """
-        Execute sphinx-cli command
+        Execute sphinx-cli command (internal - runs silently)
         
         Args:
             prompt: The prompt to send to Sphinx AI
@@ -210,29 +216,39 @@ class SphinxPredictor:
         # Set up environment variables
         # Sphinx CLI uses SPHINX_API_KEY environment variable for authentication
         env = os.environ.copy()
-        if self.api_key:
-            env['SPHINX_API_KEY'] = self.api_key
+        env['SPHINX_API_KEY'] = self.api_key
         
         try:
-            # Run sphinx-cli
+            # Run sphinx-cli silently
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                env=env
+                env=env,
+                stdin=subprocess.DEVNULL  # Prevent any interactive prompts
             )
             
             if result.returncode != 0:
-                raise RuntimeError(f"Sphinx CLI failed: {result.stderr}")
+                error_msg = result.stderr.strip()
+                # Check for common authentication errors
+                if 'authentication' in error_msg.lower() or 'api key' in error_msg.lower():
+                    raise RuntimeError(
+                        "Sphinx AI authentication failed. Please check your SPHINX_API_KEY in .env file.\n"
+                        f"Error: {error_msg}"
+                    )
+                raise RuntimeError(f"Sphinx AI request failed: {error_msg}")
             
             return result.stdout
             
         except subprocess.TimeoutExpired:
-            raise TimeoutError(f"Sphinx CLI timed out after {timeout} seconds")
+            raise TimeoutError(
+                f"Sphinx AI analysis timed out after {timeout} seconds. "
+                "This may happen with complex queries or slow network connections."
+            )
         except FileNotFoundError:
             raise RuntimeError(
-                "sphinx-cli not found. Install with: pip install sphinx-ai-cli"
+                "sphinx-cli not found. Please install: pip install sphinx-ai-cli"
             )
     
     def _parse_sphinx_response(self, response):
