@@ -25,14 +25,16 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Header */}
       <header className="border-b border-border bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-6">
+        <div className="px-4 py-6">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-              <Wind className="w-8 h-8 text-primary" />
-            </div>
+            <img 
+              src="/assets/turbine-logo.svg" 
+              alt="Wind Turbine Logo" 
+              className="w-12 h-12"
+            />
             <div>
               <h1 className="text-3xl font-bold text-foreground">
-                Wake-Steering Optimizer
+                Zephyr Dashboard
               </h1>
               <p className="text-muted-foreground">
                 Real-time wind farm performance monitoring and optimization
@@ -60,65 +62,12 @@ const Index = () => {
         )}
 
         {/* Live Chart */}
-        {!loadingPrediction && !loadingActual && prediction && actual && (
+        {!loadingPrediction && !loadingActual && prediction && actual && 
+         prediction.predicted_power?.length > 0 && actual.actual_power?.length > 0 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
             <LiveFarmOutputChart prediction={prediction} actual={actual} />
           </div>
         )}
-
-        {/* Instructions */}
-        <div className="bg-card/60 backdrop-blur-sm border border-border rounded-lg p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-          <h3 className="text-xl font-semibold text-foreground mb-4">
-            Getting Started
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 border border-primary/20 mb-3">
-                <span className="text-primary font-bold">1</span>
-              </div>
-              <h4 className="font-semibold text-foreground mb-2">Click Any Turbine</h4>
-              <p className="text-sm text-muted-foreground">
-                Select a turbine on the map to view detailed analytics and optimization data
-              </p>
-            </div>
-            <div>
-              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-secondary/10 border border-secondary/20 mb-3">
-                <span className="text-secondary font-bold">2</span>
-              </div>
-              <h4 className="font-semibold text-foreground mb-2">Monitor Performance</h4>
-              <p className="text-sm text-muted-foreground">
-                Track real-time power output, yaw angles, and wake effects across the farm
-              </p>
-            </div>
-            <div>
-              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-accent/10 border border-accent/20 mb-3">
-                <span className="text-accent font-bold">3</span>
-              </div>
-              <h4 className="font-semibold text-foreground mb-2">Optimize Operations</h4>
-              <p className="text-sm text-muted-foreground">
-                Use the re-run optimization feature to adjust yaw angles for maximum efficiency
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Backend Connection Info */}
-        <div className="bg-muted/20 backdrop-blur-sm border border-border rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-3">
-            Backend Integration
-          </h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Currently using mock data for demonstration. To connect to your backend at{" "}
-            <code className="bg-card px-2 py-1 rounded text-primary">
-              https://github.com/CalvinPrajogo/wake-steering-optimizer
-            </code>
-          </p>
-          <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
-            <li>Set the <code className="bg-card px-1 rounded">VITE_API_URL</code> environment variable</li>
-            <li>Ensure backend endpoints match the API client in <code className="bg-card px-1 rounded">src/lib/api.ts</code></li>
-            <li>Remove mock data and uncomment actual fetch calls</li>
-          </ol>
-        </div>
       </section>
     </div>
   );

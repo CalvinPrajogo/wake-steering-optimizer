@@ -1,0 +1,135 @@
+{
+  "date": "2012-01-01",
+  "hours_processed": 6,
+  "total_hours": 24,
+  "average_power": 28497.698131640314,
+  "average_improvement": 3.768750917977299,
+  "hourly_data": [
+    {
+      "hour": 0,
+      "wind_speed": 11.43,
+      "wind_direction": 310.66,
+      "predicted_yaw": [
+        -10.0,
+        -7.0,
+        -7.0,
+        -3.0,
+        1.0
+      ],
+      "actual_yaw": [
+        -12.0,
+        -9.0,
+        -7.0,
+        -1.0,
+        0.0
+      ],
+      "power_output": 30960.429391037604,
+      "improvement_percent": 2.8039228019577855
+    },
+    {
+      "hour": 1,
+      "wind_speed": 9.74,
+      "wind_direction": 313.19,
+      "predicted_yaw": [
+        -14.0,
+        -13.0,
+        -10.0,
+        -2.0,
+        1.0
+      ],
+      "actual_yaw": [
+        -14.0,
+        -12.0,
+        -8.0,
+        0.0,
+        1.0
+      ],
+      "power_output": 29502.309914952526,
+      "improvement_percent": 4.584742156590192
+    },
+    {
+      "hour": 2,
+      "wind_speed": 8.790000000000001,
+      "wind_direction": 313.91,
+      "predicted_yaw": [
+        -17.0,
+        -10.0,
+        -9.0,
+        -3.0,
+        0.0
+      ],
+      "actual_yaw": [
+        -17.0,
+        -10.0,
+        -8.0,
+        -1.0,
+        0.0
+      ],
+      "power_output": 28075.3987837425,
+      "improvement_percent": 4.326850669772586
+    },
+    {
+      "hour": 3,
+      "wind_speed": 8.35,
+      "wind_direction": 310.91,
+      "predicted_yaw": [
+        -15.0,
+        -13.0,
+        -9.0,
+        0.0,
+        -2.0
+      ],
+      "actual_yaw": [
+        -15.0,
+        -10.0,
+        -9.0,
+        -1.0,
+        -2.0
+      ],
+      "power_output": 27448.996070425517,
+      "improvement_percent": 3.7024295229344393
+    },
+    {
+      "hour": 4,
+      "wind_speed": 8.09,
+      "wind_direction": 310.74,
+      "predicted_yaw": [
+        -15.0,
+        -11.0,
+        -9.0,
+        -2.0,
+        -2.0
+      ],
+      "actual_yaw": [
+        -15.0,
+        -11.0,
+        -8.0,
+        -2.0,
+        -2.0
+      ],
+      "power_output": 28576.319131940647,
+      "improvement_percent": 4.43034326831108
+    },
+    {
+      "hour": 5,
+      "wind_speed": 7.390000000000001,
+      "wind_direction": 309.53000000000003,
+      "predicted_yaw": [
+        -14.0,
+        -11.0,
+        -9.0,
+        -3.0,
+        -1.0
+      ],
+      "actual_yaw": [
+        -16.0,
+        -11.0,
+        -8.0,
+        -2.0,
+        -1.0
+      ],
+      "power_output": 26422.735497743106,
+      "improvement_percent": 2.7642170882977113
+    }
+  ]
+}
