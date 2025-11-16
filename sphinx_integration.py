@@ -14,6 +14,10 @@ import os
 from pathlib import Path
 from datetime import datetime
 import tempfile
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class SphinxPredictor:

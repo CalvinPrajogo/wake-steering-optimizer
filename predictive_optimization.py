@@ -34,7 +34,7 @@ class PredictiveOptimizer:
     def __init__(self, floris_config='floris_config.yaml', 
                  notebook_path='data_preprocessing.ipynb'):
         """Initialize the predictive optimizer"""
-        self.optimizer = WakeSteeringOptimizer(floris_config)
+        self.optimizer = WakeSteeringOptimizer()  # Uses floris_config.yaml by default
         self.sphinx = SphinxPredictor(notebook_path)
         self.predictions_dir = Path('data/predictions')
         self.predictions_dir.mkdir(parents=True, exist_ok=True)
