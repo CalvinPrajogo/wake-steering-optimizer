@@ -1,8 +1,8 @@
 # FLORIS Configuration for Wake Steering Optimization
 # Based on NREL 5MW turbine with Gauss wake model
 
-name: Wake Steering 4-Turbine Farm
-description: 2x2 grid layout for MIT Hackathon optimization
+name: Wake Steering 5-Turbine Farm
+description: 5-turbine linear layout case study for wake steering optimization
 floris_version: v4
 
 logging:
@@ -18,9 +18,13 @@ solver:
   turbine_grid_points: 3  # 3x3 grid on each rotor
 
 farm:
-  layout_x: [0.0, 0.0, 630.0, 630.0]
-  layout_y: [0.0, 630.0, 0.0, 630.0]
+  layout_x: [0.0, -534.64, -1139.06, -1805.23, -2520.37]
+  layout_y: [0.0, -643.26, -1221.17, -1726.18, -2148.10]
   turbine_type:
+    - nrel_5MW
+    - nrel_5MW
+    - nrel_5MW
+    - nrel_5MW
     - nrel_5MW
 
 flow_field:
