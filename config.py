@@ -4,10 +4,11 @@ Configuration parameters for wake steering optimization
 
 # Wind Farm Layout Configuration
 TURBINE_POSITIONS = [
-    (0, 0),      # Turbine 1
-    (0, 630),    # Turbine 2  
-    (630, 0),    # Turbine 3
-    (630, 630)   # Turbine 4
+    (0.0, 0.0),           # Turbine 1
+    (-534.64, -643.26),   # Turbine 2  
+    (-1139.06, -1221.17), # Turbine 3
+    (-1805.23, -1726.18), # Turbine 4
+    (-2520.37, -2148.10)  # Turbine 5
 ]
 
 # Wind Conditions
@@ -22,7 +23,7 @@ ROTOR_DIAMETER = 126       # meters
 YAW_ANGLE_MIN = -5   # degrees
 YAW_ANGLE_MAX = 5    # degrees
 YAW_ANGLE_STEP = 1   # degrees
-N_TURBINES = 4
+N_TURBINES = 5
 
 # Economic Parameters
 ELECTRICITY_PRICE = 50  # $/MWh

@@ -80,8 +80,8 @@ class WakeSteeringOptimizer:
         Returns:
             Total farm power output (kW)
         """
-        # Set yaw angles - FLORIS expects shape (n_findex, n_turbines)
-        yaw_array = np.array([yaw_angles])  # Add findex dimension
+        # Set yaw angles - FLORIS expects shape (n_findex, n_turbines) and float dtype
+        yaw_array = np.array([yaw_angles], dtype=float)  # Add findex dimension and ensure float
         
         # Set yaw angles and run simulation
         self.fmodel.set(yaw_angles=yaw_array)
@@ -103,8 +103,8 @@ class WakeSteeringOptimizer:
         Returns:
             Array of individual turbine powers (kW)
         """
-        # Set yaw angles and run simulation
-        yaw_array = np.array([yaw_angles])
+        # Set yaw angles and run simulation - ensure float dtype
+        yaw_array = np.array([yaw_angles], dtype=float)
         self.fmodel.set(yaw_angles=yaw_array)
         self.fmodel.run()
         
@@ -201,7 +201,7 @@ class WakeSteeringOptimizer:
         print("="*60)
         
         # Calculate baseline (all turbines at 0° yaw)
-        baseline_yaw = [0] * self.n_turbines
+        baseline_yaw = [0.0] * self.n_turbines
         self.baseline_power = self.run_simulation(baseline_yaw)
         self.baseline_turbine_powers = self.get_turbine_powers(baseline_yaw)
         print(f"\nBaseline power (0° yaw): {self.baseline_power:.2f} kW")
@@ -218,8 +218,9 @@ class WakeSteeringOptimizer:
         best_yaw = None
         
         for idx, yaw_angles in enumerate(yaw_combinations):
-            # Run simulation
-            power = self.run_simulation(list(yaw_angles))
+            # Run simulation - convert to list and ensure float type
+            yaw_list = [float(y) for y in yaw_angles]
+            power = self.run_simulation(yaw_list)
             
             # Store result
             self.all_results.append({
@@ -283,7 +284,7 @@ class WakeSteeringOptimizer:
         print("WAKE STEERING OPTIMIZATION RESULTS")
         print("="*60)
         print(f"Wind Conditions: {self.wind_direction}° @ {self.wind_speed} m/s")
-        print(f"Turbine Layout: 2x2 grid, 5D spacing")
+        print(f"Turbine Layout: 5-turbine linear layout")
         
         print("\nBASELINE (No Steering):")
         print(f"  Total Power: {results['baseline_power']:.2f} kW")
