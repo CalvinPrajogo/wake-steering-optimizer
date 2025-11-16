@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 220 25% 12%;
+    --foreground: 180 100% 95%;
+
+    --card: 220 30% 15%;
+    --card-foreground: 180 100% 95%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 180 100% 95%;
+
+    --primary: 180 100% 50%;
+    --primary-foreground: 220 30% 10%;
+
+    --secondary: 210 100% 45%;
+    --secondary-foreground: 180 100% 95%;
+
+    --muted: 220 20% 25%;
+    --muted-foreground: 180 30% 70%;
+
+    --accent: 180 100% 60%;
+    --accent-foreground: 220 30% 10%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 180 100% 95%;
+
+    --border: 220 25% 25%;
+    --input: 220 25% 25%;
+    --ring: 180 100% 50%;
+
+    --radius: 0.75rem;
+
+    --energy-glow: 180 100% 50%;
+    --turbine-active: 140 80% 50%;
+    --turbine-warning: 45 100% 55%;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(180 100% 40%), hsl(210 100% 50%));
+    --gradient-card: linear-gradient(135deg, hsl(220 30% 15% / 0.8), hsl(220 35% 18% / 0.8));
+    --shadow-glow: 0 0 40px hsl(180 100% 50% / 0.2);
+    --shadow-strong: 0 20px 60px -10px hsl(220 40% 5% / 0.5);
+  }
+
+  .dark {
+    --background: 220 25% 12%;
+    --foreground: 180 100% 95%;
+
+    --card: 220 30% 15%;
+    --card-foreground: 180 100% 95%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 180 100% 95%;
+
+    --primary: 180 100% 50%;
+    --primary-foreground: 220 30% 10%;
+
+    --secondary: 210 100% 45%;
+    --secondary-foreground: 180 100% 95%;
+
+    --muted: 220 20% 25%;
+    --muted-foreground: 180 30% 70%;
+
+    --accent: 180 100% 60%;
+    --accent-foreground: 220 30% 10%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 180 100% 95%;
+
+    --border: 220 25% 25%;
+    --input: 220 25% 25%;
+    --ring: 180 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
