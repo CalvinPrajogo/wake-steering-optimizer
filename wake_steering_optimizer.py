@@ -113,6 +113,75 @@ class WakeSteeringOptimizer:
         
         return turbine_powers
     
+    def optimize_with_ranges(self, search_ranges, progress_interval=100):
+        """
+        Run optimization with custom search ranges for each turbine
+        (Used for narrow search around predicted yaw angles)
+        
+        Args:
+            search_ranges: List of (min, max) tuples for each turbine
+                          e.g., [(-6, -2), (1, 5), (-2, 2), (-1, 3)]
+            progress_interval: Print progress every N combinations
+            
+        Returns:
+            Dictionary with optimization results
+        """
+        print("\n" + "="*60)
+        print("STARTING OPTIMIZATION WITH CUSTOM RANGES")
+        print("="*60)
+        
+        # Calculate baseline (all turbines at 0° yaw)
+        baseline_yaw = [0] * self.n_turbines
+        self.baseline_power = self.run_simulation(baseline_yaw)
+        self.baseline_turbine_powers = self.get_turbine_powers(baseline_yaw)
+        print(f"\nBaseline power (0° yaw): {self.baseline_power:.2f} kW")
+        
+        # Generate ranges for each turbine
+        ranges = []
+        for ymin, ymax in search_ranges:
+            ranges.append(range(ymin, ymax + 1))
+        
+        # Generate all combinations
+        yaw_combinations = list(product(*ranges))
+        total_combinations = len(yaw_combinations)
+        print(f"\nTesting {total_combinations:,} yaw angle combinations...")
+        
+        # Run optimization
+        start_time = time()
+        best_power = 0
+        best_yaw = None
+        
+        for idx, yaw_angles in enumerate(yaw_combinations):
+            # Run simulation
+            power = self.run_simulation(list(yaw_angles))
+            
+            # Store result
+            self.all_results.append({
+                'yaw_angles': yaw_angles,
+                'power': power
+            })
+            
+            # Track best result
+            if power > best_power:
+                best_power = power
+                best_yaw = yaw_angles
+            
+            # Print progress
+            if (idx + 1) % progress_interval == 0:
+                elapsed = time() - start_time
+                progress = (idx + 1) / total_combinations * 100
+                print(f"Progress: {idx + 1:,}/{total_combinations:,} ({progress:.1f}%) - Elapsed: {elapsed:.1f}s")
+        
+        # Store optimal results
+        self.optimal_power = best_power
+        self.optimal_yaw_angles = list(best_yaw)
+        self.optimal_turbine_powers = self.get_turbine_powers(self.optimal_yaw_angles)
+        
+        elapsed_time = time() - start_time
+        print(f"\nOptimization complete in {elapsed_time:.1f} seconds")
+        
+        return self.get_results()
+    
     def optimize(self, yaw_range=None, progress_interval=1000):
         """
         Run brute force optimization over all yaw angle combinations
@@ -194,7 +263,9 @@ class WakeSteeringOptimizer:
         results = {
             'baseline_power': self.baseline_power,
             'optimal_power': self.optimal_power,
+            'total_power': self.optimal_power,  # Alias for compatibility
             'optimal_yaw_angles': self.optimal_yaw_angles,
+            'turbine_powers': self.optimal_turbine_powers,
             'improvement_percent': improvement,
             'power_gain': self.optimal_power - self.baseline_power,
             'all_results': self.all_results
