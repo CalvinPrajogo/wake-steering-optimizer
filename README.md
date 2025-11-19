@@ -21,7 +21,6 @@ wake-steering-optimizer/
 ├── wake_steering_optimizer.py  # Main optimization algorithm
 ├── visualization.py             # Visualization functions
 ├── data_preprocessing.ipynb    # Jupyter notebook for data cleaning (Sphinx AI)
-├── test_floris.py              # FLORIS installation test script
 ├── requirements.txt            # Python dependencies
 ├── data/
 │   ├── raw/                    # Place raw wind data here
@@ -73,19 +72,6 @@ EOF
 - Sphinx AI: https://sphinx.ai/settings/api-keys (required for AI-powered predictions)
 
 **Note:** The `.env` file is gitignored and will not be committed to your repository.
-
-### 4. Verify Installation
-
-```bash
-python test_floris.py
-```
-
-You should see output like:
-```
-✓ All tests passed! FLORIS is working correctly.
-Baseline (0° yaw): 4380.94 kW
-With yaw [-5°, 3°, 0°, 0°]: 4403.89 kW (+0.52% improvement)
-```
 
 ## Usage
 
